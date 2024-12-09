@@ -30,6 +30,7 @@ export function Square({
 
     return dropTargetForElements({
       element,
+      getData: () => ({ location }),
       canDrop: ({ source }) => {
         if (!isCoord(source.data.location)) {
           return false;
