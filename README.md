@@ -20,3 +20,9 @@ Start the development server:
 ```bash
 pnpm dev
 ```
+
+## Todo
+
+- [ ] add more chess pieces
+- [ ] make the whole game work
+- [ ] profit??
