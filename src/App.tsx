@@ -1,5 +1,7 @@
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import clsx from "clsx";
-import type { ReactElement } from "react";
+import { useEffect, useRef, useState, type ReactElement } from "react";
+import invariant from "tiny-invariant";
 import king from "./assets/king.svg";
 import pawn from "./assets/pawn.svg";
 import { GRID_SIZE } from "./constants";
@@ -66,13 +68,30 @@ function Pawn() {
 }
 
 function Piece({ image, alt }: { image: string; alt: string }) {
+  const ref = useRef<HTMLImageElement>(null);
+
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    invariant(element);
+
+    return draggable({
+      element,
+      onDragStart: () => setIsDragging(true),
+      onDrop: () => setIsDragging(false),
+    });
+  }, []);
+
   return (
     <img
+      ref={ref}
       src={image}
       alt={alt}
-      // draggable set to false to prevent dragging of the images
-      draggable={false}
-      className="size-[2.8125rem] rounded-md p-1 shadow-lg shadow-sky-950/25 ring-inset ring-sky-950/25 hover:bg-neutral-400/25"
+      className={clsx(
+        "size-[2.8125rem] rounded-md p-1 shadow-lg shadow-sky-950/25 ring-inset ring-sky-950/25 hover:bg-neutral-400/25",
+        isDragging ? "opacity-25" : "",
+      )}
     />
   );
 }
