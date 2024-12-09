@@ -1,18 +1,15 @@
-import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import clsx from "clsx";
-import { useEffect, useRef, useState, type ReactElement } from "react";
-import invariant from "tiny-invariant";
-import king from "./assets/king.svg";
-import pawn from "./assets/pawn.svg";
+import { type CSSProperties, type ReactElement } from "react";
+import { King, Pawn } from "./components/Pieces";
+import { Square } from "./components/Square";
 import { GRID_SIZE } from "./constants";
 import type { Coord, PieceRecord, PieceType } from "./types";
 import { isEqualCoord } from "./utils";
 
 const pieceLookup: {
-  [Key in PieceType]: () => ReactElement;
+  [Key in PieceType]: (location: [number, number]) => ReactElement;
 } = {
-  king: () => <King />,
-  pawn: () => <Pawn />,
+  king: (location) => <King location={location} />,
+  pawn: (location) => <Pawn location={location} />,
 };
 
 export default function ChessBoard() {
@@ -23,7 +20,10 @@ export default function ChessBoard() {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center px-6 py-12 lg:px-8">
-      <div className="mx-auto grid w-full max-w-[31.25rem] grid-cols-8 grid-rows-8 border-[3px] border-neutral-300">
+      <div
+        style={{ "--grid-size": GRID_SIZE } as CSSProperties}
+        className="mx-auto grid size-[31.25rem] grid-cols-[repeat(var(--grid-size),_1fr)] grid-rows-[repeat(var(--grid-size),_1fr)] border-[3px] border-gray-300"
+      >
         {renderSquares(pieces)}
       </div>
     </div>
@@ -31,7 +31,8 @@ export default function ChessBoard() {
 }
 
 function renderSquares(pieces: PieceRecord[]) {
-  const squares = [];
+  const squares: JSX.Element[] = [];
+
   for (let row = 0; row < GRID_SIZE; row++) {
     for (let col = 0; col < GRID_SIZE; col++) {
       const squareCoord: Coord = [row, col];
@@ -40,58 +41,17 @@ function renderSquares(pieces: PieceRecord[]) {
         isEqualCoord(piece.location, squareCoord),
       );
 
-      const isDark = (row + col) % 2 === 1;
-
       squares.push(
-        <div
+        <Square
           key={squareCoord.join(",")}
-          className={clsx(
-            "flex h-14 items-center justify-center",
-            isDark ? "bg-neutral-300" : "bg-white",
-          )}
+          pieces={pieces}
+          location={squareCoord}
         >
-          {piece ? pieceLookup[piece.type]() : null}
-        </div>,
+          {piece ? pieceLookup[piece.type](squareCoord) : null}
+        </Square>,
       );
     }
   }
 
   return squares;
-}
-
-function King() {
-  return <Piece image={king} alt="King" />;
-}
-
-function Pawn() {
-  return <Piece image={pawn} alt="Pawn" />;
-}
-
-function Piece({ image, alt }: { image: string; alt: string }) {
-  const ref = useRef<HTMLImageElement>(null);
-
-  const [isDragging, setIsDragging] = useState(false);
-
-  useEffect(() => {
-    const element = ref.current;
-    invariant(element);
-
-    return draggable({
-      element,
-      onDragStart: () => setIsDragging(true),
-      onDrop: () => setIsDragging(false),
-    });
-  }, []);
-
-  return (
-    <img
-      ref={ref}
-      src={image}
-      alt={alt}
-      className={clsx(
-        "size-[2.8125rem] rounded-md p-1 shadow-lg shadow-sky-950/25 ring-inset ring-sky-950/25 hover:bg-neutral-400/25",
-        isDragging ? "opacity-25" : "",
-      )}
-    />
-  );
 }

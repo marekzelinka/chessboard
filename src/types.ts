@@ -1,3 +1,5 @@
+export type HoveredState = "idle" | "validMove" | "invalidMove";
+
 export interface PieceRecord {
   type: PieceType;
   location: Coord;

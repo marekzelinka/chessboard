@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import colors from "tailwindcss/colors";
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -15,6 +16,9 @@ export default {
           '"Segoe UI Symbol"',
           '"Noto Color Emoji"',
         ],
+      },
+      colors: {
+        gray: colors.neutral,
       },
     },
   },
