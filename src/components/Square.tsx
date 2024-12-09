@@ -36,7 +36,9 @@ export function Square({
           return false;
         }
 
-        return !isEqualCoord(source.data.location, location);
+        const destinationLocation = source.data.location;
+
+        return !isEqualCoord(destinationLocation, location);
       },
       onDragEnter: ({
         // source is the piece being dragged over the drop target
@@ -49,11 +51,14 @@ export function Square({
           return;
         }
 
+        const startLocation = source.data.location;
+        const pieceType = source.data.pieceType;
+
         if (
           canMove({
-            start: source.data.location,
+            start: startLocation,
             destination: location,
-            pieceType: source.data.pieceType,
+            pieceType: pieceType,
             pieces,
           })
         ) {
